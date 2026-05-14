@@ -1,0 +1,166 @@
+<app-header></app-header>
+
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1>HR Dashboard</h1>
+      <p>Complete overview of all leave requests and approvals</p>
+    </div>
+  </div>
+
+  <!-- Stats Row -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon blue">📋</div>
+      <div class="stat-info">
+        <span class="stat-num">{{ approvalHistory.length }}</span>
+        <span class="stat-label">Total Processed</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon green">✅</div>
+      <div class="stat-info">
+        <span class="stat-num">{{ totalApproved }}</span>
+        <span class="stat-label">Approved</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon red">❌</div>
+      <div class="stat-info">
+        <span class="stat-num">{{ totalRejected }}</span>
+        <span class="stat-label">Rejected</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon yellow">⏳</div>
+      <div class="stat-info">
+        <span class="stat-num">{{ pendingLeaves.length }}</span>
+        <span class="stat-label">Still Pending</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert alert-error" *ngIf="error"><span>⚠️</span> {{ error }}</div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab" [class.active]="activeTab === 'history'" (click)="activeTab = 'history'">
+      📊 Approval History
+    </button>
+    <button class="tab" [class.active]="activeTab === 'pending'" (click)="activeTab = 'pending'">
+      ⏳ Pending Leaves
+      <span class="tab-badge" *ngIf="pendingLeaves.length > 0">{{ pendingLeaves.length }}</span>
+    </button>
+  </div>
+
+  <!-- Approval History Tab -->
+  <div class="card" *ngIf="activeTab === 'history'">
+    <div class="card-toolbar">
+      <h2 class="card-title">Leave Approval History</h2>
+      <div class="toolbar-controls">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" [(ngModel)]="searchTerm" placeholder="Search by employee or manager..." />
+        </div>
+        <select [(ngModel)]="filterDecision" class="filter-select">
+          <option value="">All Decisions</option>
+          <option value="Approved">Approved</option>
+          <option value="Rejected">Rejected</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="loading-state" *ngIf="loading">
+      <div class="spinner"></div>
+      <p>Loading history...</p>
+    </div>
+
+    <div class="empty-state" *ngIf="!loading && filteredHistory.length === 0">
+      <span class="empty-icon">📭</span>
+      <p>No approval records found.</p>
+    </div>
+
+    <div class="table-wrapper" *ngIf="!loading && filteredHistory.length > 0">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Employee</th>
+            <th>Approved By</th>
+            <th>Decision</th>
+            <th>Remarks</th>
+            <th>Decision Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let record of filteredHistory">
+            <td class="id-col">{{ record.leaveRequestId }}</td>
+            <td>
+              <div class="cell-user">
+                <div class="mini-avatar">{{ record.employeeName.charAt(0).toUpperCase() }}</div>
+                {{ record.employeeName }}
+              </div>
+            </td>
+            <td>
+              <div class="cell-user">
+                <div class="mini-avatar manager-av">{{ record.managerName.charAt(0).toUpperCase() }}</div>
+                {{ record.managerName }}
+              </div>
+            </td>
+            <td>
+              <span class="status-badge" [ngClass]="getDecisionClass(record.decision)">
+                {{ record.decision }}
+              </span>
+            </td>
+            <td class="remarks-col">{{ record.remarks || '—' }}</td>
+            <td>{{ record.decisionDate | date:'dd MMM yyyy, h:mm a' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Pending Tab -->
+  <div class="card" *ngIf="activeTab === 'pending'">
+    <h2 class="card-title">Pending Leave Requests</h2>
+
+    <div class="empty-state" *ngIf="pendingLeaves.length === 0">
+      <span class="empty-icon">🎉</span>
+      <p>No pending requests at the moment.</p>
+    </div>
+
+    <div class="table-wrapper" *ngIf="pendingLeaves.length > 0">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Employee</th>
+            <th>Leave Type</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Reason</th>
+            <th>Requested On</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let leave of pendingLeaves">
+            <td class="id-col">{{ leave.leaveRequestId }}</td>
+            <td>
+              <div class="cell-user">
+                <div class="mini-avatar">{{ leave.employeeName?.charAt(0)?.toUpperCase() || 'E' }}</div>
+                {{ leave.employeeName || 'Employee' }}
+              </div>
+            </td>
+            <td><span class="leave-type-tag">{{ leave.leaveTypeName }}</span></td>
+            <td>{{ leave.startDate | date:'dd MMM yyyy' }}</td>
+            <td>{{ leave.endDate | date:'dd MMM yyyy' }}</td>
+            <td class="reason-col">{{ leave.reason }}</td>
+            <td>{{ leave.requestedOn | date:'dd MMM yyyy' }}</td>
+            <td><span class="status-badge status-pending">Pending</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

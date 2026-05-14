@@ -1,0 +1,136 @@
+<app-header></app-header>
+
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1>My Dashboard</h1>
+      <p>Manage your leave requests and track their status</p>
+    </div>
+    <button class="btn-primary" (click)="showApplyForm = !showApplyForm">
+      {{ showApplyForm ? '✕ Close' : '+ Apply for Leave' }}
+    </button>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon pending">⏳</div>
+      <div class="stat-info">
+        <span class="stat-num">{{ pendingCount }}</span>
+        <span class="stat-label">Pending</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon approved">✅</div>
+      <div class="stat-info">
+        <span class="stat-num">{{ approvedCount }}</span>
+        <span class="stat-label">Approved</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon rejected">❌</div>
+      <div class="stat-info">
+        <span class="stat-num">{{ rejectedCount }}</span>
+        <span class="stat-label">Rejected</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon total">📋</div>
+      <div class="stat-info">
+        <span class="stat-num">{{ myLeaves.length }}</span>
+        <span class="stat-label">Total Requests</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alerts -->
+  <div class="alert alert-error" *ngIf="error"><span>⚠️</span> {{ error }} <button (click)="error=''">✕</button></div>
+  <div class="alert alert-success" *ngIf="success"><span>✅</span> {{ success }}</div>
+
+  <!-- Apply Form -->
+  <div class="card form-card" *ngIf="showApplyForm">
+    <h2 class="card-title">Apply for Leave</h2>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Leave Type</label>
+        <select [(ngModel)]="newLeave.leaveTypeId">
+          <option *ngFor="let lt of leaveTypes" [value]="lt.id">{{ lt.name }}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Start Date</label>
+        <input type="date" [(ngModel)]="newLeave.startDate" />
+      </div>
+      <div class="form-group">
+        <label>End Date</label>
+        <input type="date" [(ngModel)]="newLeave.endDate" />
+      </div>
+      <div class="form-group full-width">
+        <label>Reason</label>
+        <textarea [(ngModel)]="newLeave.reason" rows="3" placeholder="Brief reason for leave..."></textarea>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-secondary" (click)="showApplyForm = false; resetForm()">Cancel</button>
+      <button class="btn-primary" (click)="applyLeave()" [disabled]="applyLoading">
+        <span *ngIf="!applyLoading">Submit Request</span>
+        <span *ngIf="applyLoading" class="spinner-sm"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Leave List -->
+  <div class="card">
+    <h2 class="card-title">My Leave Requests</h2>
+
+    <div class="loading-state" *ngIf="loading">
+      <div class="spinner"></div>
+      <p>Loading leaves...</p>
+    </div>
+
+    <div class="empty-state" *ngIf="!loading && myLeaves.length === 0">
+      <span class="empty-icon">📭</span>
+      <p>No leave requests yet. Apply for your first leave!</p>
+    </div>
+
+    <div class="table-wrapper" *ngIf="!loading && myLeaves.length > 0">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Leave Type</th>
+            <th>Duration</th>
+            <th>Days</th>
+            <th>Reason</th>
+            <th>Status</th>
+            <th>Remarks</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let leave of myLeaves">
+            <td class="id-col">{{ leave.leaveRequestId }}</td>
+            <td><span class="leave-type">{{ leave.leaveTypeName }}</span></td>
+            <td class="date-col">
+              {{ leave.startDate | date:'dd MMM' }} → {{ leave.endDate | date:'dd MMM, yyyy' }}
+            </td>
+            <td class="days-col">{{ getDays(leave.startDate, leave.endDate) }}d</td>
+            <td class="reason-col">{{ leave.reason }}</td>
+            <td><span class="status-badge" [ngClass]="getStatusClass(leave.status)">{{ leave.status }}</span></td>
+            <td class="remarks-col">{{ leave.remarks || '—' }}</td>
+            <td>
+              <button
+                class="btn-cancel"
+                *ngIf="leave.status === 'Pending'"
+                [disabled]="cancellingId === leave.leaveRequestId"
+                (click)="cancelLeave(leave.leaveRequestId)">
+                {{ cancellingId === leave.leaveRequestId ? '...' : 'Cancel' }}
+              </button>
+              <span *ngIf="leave.status !== 'Pending'" class="na-text">—</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
