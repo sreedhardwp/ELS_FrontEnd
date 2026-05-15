@@ -12,7 +12,7 @@ export class LeaveService {
   constructor(private http: HttpClient) {}
 
   getMyLeaves(): Observable<LeaveRequestResponse[]> {
-    return this.http.get<LeaveRequestResponse[]>(`${this.LEAVE_API}/my leave`);
+    return this.http.get<LeaveRequestResponse[]>(`${this.LEAVE_API}/myleave`);
   }
 
   getPendingLeaves(): Observable<LeaveRequestResponse[]> {
