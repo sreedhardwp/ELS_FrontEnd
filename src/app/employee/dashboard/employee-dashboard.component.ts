@@ -57,6 +57,10 @@ export class EmployeeDashboardComponent implements OnInit {
     if (!this.newLeave.startDate || !this.newLeave.endDate || !this.newLeave.reason) {
       this.error = 'Please fill all fields.'; return;
     }
+     if (this.newLeave.endDate < this.newLeave.startDate) {
+    this.error = 'End Date cannot be earlier than Start Date.';
+    return;
+  }
     this.applyLoading = true;
     this.error = '';
     this.leaveService.applyLeave(this.newLeave).subscribe({
@@ -107,4 +111,5 @@ export class EmployeeDashboardComponent implements OnInit {
     const s = new Date(start), e = new Date(end);
     return Math.floor((e.getTime() - s.getTime()) / 86400000) + 1;
   }
+  
 }

@@ -63,7 +63,7 @@
       </div>
       <div class="form-group">
         <label>End Date</label>
-        <input type="date" [(ngModel)]="newLeave.endDate" />
+        <input type="date" [(ngModel)]="newLeave.endDate" [min]="newLeave.startDate" />
       </div>
       <div class="form-group full-width">
         <label>Reason</label>
