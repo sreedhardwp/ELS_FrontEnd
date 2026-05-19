@@ -23,11 +23,11 @@ export class EmployeeDashboardComponent implements OnInit {
   cancellingId: number | null = null;
 
   leaveTypes = [
-    { id: 1, name: 'Sick Leave' },
-    { id: 2, name: 'Casual Leave' },
-    { id: 3, name: 'Annual Leave' },
-    { id: 4, name: 'Maternity Leave' }
-  ];
+  { id: 1, name: 'Annual Leave' },
+  { id: 2, name: 'Sick Leave' },
+  { id: 3, name: 'Casual Leave' },
+  { id: 4, name: 'Maternity Leave' }
+];
 
   newLeave: CreateLeaveRequest = {
     leaveTypeId: 1,

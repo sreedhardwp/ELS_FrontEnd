@@ -1,49 +1,141 @@
 <header class="header">
+
   <div class="header-inner">
+
+    <!-- Brand -->
     <div class="brand">
       <span class="brand-icon">📋</span>
       <span class="brand-name">LeaveFlow</span>
     </div>
 
+    <!-- Navigation -->
     <nav class="nav-links" *ngIf="currentUser">
-      <a *ngIf="currentUser.role === 'Employee'" routerLink="/employee" routerLinkActive="active">My Dashboard</a>
-      <a *ngIf="currentUser.role === 'Manager'" routerLink="/manager" routerLinkActive="active">Manager Dashboard</a>
-      <a *ngIf="currentUser.role === 'HRAdmin'" routerLink="/hr" routerLinkActive="active">HR Dashboard</a>
+
+      <a
+        *ngIf="roles.includes('Employee')"
+        routerLink="/employee"
+        routerLinkActive="active">
+        My Dashboard
+      </a>
+
+      <a
+        *ngIf="roles.includes('Manager')"
+        routerLink="/manager"
+        routerLinkActive="active">
+        Manager Dashboard
+      </a>
+
+      <a
+        *ngIf="roles.includes('HRAdmin')"
+        routerLink="/hr"
+        routerLinkActive="active">
+        HR Dashboard
+      </a>
+
     </nav>
 
+    <!-- Profile -->
     <div class="profile-area" *ngIf="currentUser">
+
       <button class="profile-btn" (click)="toggleDropdown()">
-        <div class="avatar">{{ currentUser.name.charAt(0).toUpperCase() }}</div>
-        <div class="user-info">
-          <span class="user-name">{{ currentUser.name }}</span>
-          <span class="user-role" [ngClass]="getRoleBadgeClass(currentUser.role)">{{ getRoleLabel(currentUser.role) }}</span>
+
+        <div class="avatar">
+          {{ currentUser.name.charAt(0).toUpperCase() }}
         </div>
-        <span class="chevron" [class.open]="dropdownOpen">▾</span>
+
+        <div class="user-info">
+
+          <span class="user-name">
+            {{ currentUser.name }}
+          </span>
+
+          <span
+            class="user-role"
+            [ngClass]="getRoleBadgeClass(currentUser.role)">
+
+            {{ getRoleLabel(currentUser.role) }}
+
+          </span>
+
+        </div>
+
+        <span class="chevron" [class.open]="dropdownOpen">
+          ▾
+        </span>
+
       </button>
 
-      <div class="dropdown" *ngIf="dropdownOpen" (clickOutside)="closeDropdown()">
-        <div class="dropdown-section-label">Switch Role</div>
+      <!-- Dropdown -->
+      <div
+        class="dropdown"
+        *ngIf="dropdownOpen"
+        (clickOutside)="closeDropdown()">
+
+        <!-- Show only when multiple roles exist -->
+        <div *ngIf="roles.length > 1">
+
+          <div class="dropdown-section-label">
+            Switch Role
+          </div>
+
+          <button
+            *ngFor="let role of roles"
+            class="dropdown-item role-item"
+            [class.active-role]="currentUser.role === role"
+            (click)="switchRole(role)">
+
+            <span class="role-icon">
+
+              <span *ngIf="role === 'Employee'">
+                👤
+              </span>
+
+              <span *ngIf="role === 'Manager'">
+                👔
+              </span>
+
+              <span *ngIf="role === 'HRAdmin'">
+                🏢
+              </span>
+
+            </span>
+
+            {{ getRoleLabel(role) }}
+
+            <span
+              class="check"
+              *ngIf="currentUser.role === role">
+              ✓
+            </span>
+
+          </button>
+
+          <div class="dropdown-divider"></div>
+
+        </div>
+
+        <!-- Logout -->
         <button
-          *ngFor="let role of roles"
-          class="dropdown-item role-item"
-          [class.active-role]="currentUser.role === role"
-          (click)="switchRole(role)">
-          <span class="role-icon">
-            <span *ngIf="role === 'Employee'">👤</span>
-            <span *ngIf="role === 'Manager'">👔</span>
-            <span *ngIf="role === 'HRAdmin'">🏢</span>
-          </span>
-          {{ getRoleLabel(role) }}
-          <span class="check" *ngIf="currentUser.role === role">✓</span>
+          class="dropdown-item logout-item"
+          (click)="logout()">
+
+          <span>🚪</span>
+
+          Logout
+
         </button>
-        <div class="dropdown-divider"></div>
-        <button class="dropdown-item logout-item" (click)="logout()">
-          <span>🚪</span> Logout
-        </button>
+
       </div>
+
     </div>
+
   </div>
+
 </header>
 
-<!-- Overlay to close dropdown -->
-<div class="overlay" *ngIf="dropdownOpen" (click)="closeDropdown()"></div>
+<!-- Overlay -->
+<div
+  class="overlay"
+  *ngIf="dropdownOpen"
+  (click)="closeDropdown()">
+</div>

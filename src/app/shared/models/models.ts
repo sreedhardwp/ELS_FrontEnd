@@ -12,9 +12,11 @@ export interface RegisterDto {
 }
 
 export interface AuthResponse {
+  id: number;
   token: string;
   role: string;
   name: string;
+  allowedRoles: string[];
 }
 
 export interface LeaveRequestResponse {
@@ -53,7 +55,9 @@ export interface ApprovalResponse {
 }
 
 export interface CurrentUser {
+  id: number;
   name: string;
   role: string;
   token: string;
+  allowedRoles: string[];
 }

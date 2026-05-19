@@ -54,7 +54,9 @@
       <div class="form-group">
         <label>Leave Type</label>
         <select [(ngModel)]="newLeave.leaveTypeId">
-          <option *ngFor="let lt of leaveTypes" [value]="lt.id">{{ lt.name }}</option>
+          <option *ngFor="let lt of leaveTypes" [ngValue]="lt.id">
+            {{ lt.name }}
+          </option>
         </select>
       </div>
       <div class="form-group">

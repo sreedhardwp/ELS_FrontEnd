@@ -12,16 +12,38 @@ import { CurrentUser } from '../models/models';
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit {
-  currentUser: CurrentUser | null = null;
-  dropdownOpen = false;
-  roles = ['Employee', 'Manager', 'HRAdmin'];
 
-  constructor(public authService: AuthService, private router: Router) {}
+  currentUser: CurrentUser | null = null;
+
+  dropdownOpen = false;
+
+  // dynamic roles
+  roles: string[] = [];
+
+  constructor(
+    public authService: AuthService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
+
     this.authService.currentUser$.subscribe(user => {
+
       this.currentUser = user;
+
+      if (user) {
+
+        // show only allowed roles
+        this.roles = user.allowedRoles || [user.role];
+
+      } else {
+
+        this.roles = [];
+
+      }
+
     });
+
   }
 
   toggleDropdown(): void {
@@ -33,30 +55,55 @@ export class HeaderComponent implements OnInit {
   }
 
   switchRole(role: string): void {
+
+    // prevent invalid role switching
+    if (!this.roles.includes(role)) {
+      return;
+    }
+
     this.authService.switchRole(role);
+
     this.dropdownOpen = false;
   }
 
   logout(): void {
+
     this.authService.logout();
+
     this.dropdownOpen = false;
+
   }
 
   getRoleLabel(role: string): string {
+
     const labels: Record<string, string> = {
+
       Employee: 'Employee',
+
       Manager: 'Manager',
+
       HRAdmin: 'HR Admin'
+
     };
+
     return labels[role] || role;
+
   }
 
   getRoleBadgeClass(role: string): string {
+
     const classes: Record<string, string> = {
+
       Employee: 'badge-employee',
+
       Manager: 'badge-manager',
+
       HRAdmin: 'badge-hr'
+
     };
+
     return classes[role] || '';
+
   }
+
 }
