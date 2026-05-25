@@ -37,7 +37,6 @@ Update this to match your backend port if different.
 
 ### Profile Dropdown (All Dashboards)
 - View current role badge
-- Switch between Employee / Manager / HR Admin views
 - Logout
 
 ### Employee Dashboard
