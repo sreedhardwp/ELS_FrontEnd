@@ -58,6 +58,20 @@ describe('RegisterComponent', () => {
     expect(router.navigate).toHaveBeenCalledWith(['/login']);
   }));
 
+  it('should show default error when response is empty', () => {
+  authService.register = jasmine.createSpy('register').and.returnValue(of(null));
+
+  component.name = 'John Doe';
+  component.email = 'john@example.com';
+  component.password = 'password';
+  component.department = 'HR';
+  component.role = 'HRAdmin';
+
+  component.onSubmit();
+
+  expect(component.loading).toBeFalse();
+  expect(component.error).toBe('Something went wrong. Please try again.');
+  });
   it('should show error message when registration fails', () => {
     authService.register = jasmine.createSpy('register').and.returnValue(throwError(() => ({ error: 'Registration failed' })));
 
